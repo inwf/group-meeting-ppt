@@ -1,8 +1,8 @@
 # group-meeting-ppt
 
-按固定模板生成中文组会汇报 PPT 的 Claude Code 技能。给一篇论文 PDF（或论文标题），产出整套 `.pptx` 幻灯片，可选配 8 分钟演讲稿。
+一个 Agent Skills 技能：按固定模板生成中文组会汇报 PPT。给一篇论文 PDF（或论文标题），产出整套 `.pptx` 幻灯片，可选配 8 分钟演讲稿。
 
-这是一个 [Claude Code Skill](https://code.claude.com/docs)。安装后，Claude 会按 `assets/template.pptx` 的版式自动生成封面、五章节分节页、内容页与致谢页，并校验表格排版与图片链接。
+技能遵循开放的 Agent Skills 标准（`SKILL.md` 加脚本与资源目录），可用于 Claude Code、OpenAI Codex、WorkBuddy（CodeBuddy）等支持该标准的 agent。安装后，agent 会按 `assets/template.pptx` 的版式自动生成封面、五章节分节页、内容页与致谢页，并校验表格排版与图片链接。
 
 ## 功能
 
@@ -16,19 +16,31 @@
 
 ## 安装
 
-克隆到 Claude Code 的个人技能目录：
+仓库根目录就是技能目录，克隆到对应 agent 的技能目录即可，不需要改动任何文件。未配置 SSH 时把地址换成 `https://github.com/inwf/group-meeting-ppt.git`。
+
+**Claude Code**
 
 ```bash
 git clone git@github.com:inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-未配置 SSH 时改用 HTTPS：
+**OpenAI Codex**（CLI、IDE 与应用）
 
 ```bash
-git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
+git clone git@github.com:inwf/group-meeting-ppt.git ~/.agents/skills/group-meeting-ppt
 ```
 
-装好后新开一个 Claude Code 会话。提到「组会 PPT」「论文分享」时 Claude 会自动调用，也可以用 `/group-meeting-ppt` 显式调用。
+旧版 Codex 的个人技能目录 `~/.codex/skills/` 也兼容；项目级技能放在仓库的 `.agents/skills/` 下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
+
+**WorkBuddy / CodeBuddy**
+
+```bash
+git clone git@github.com:inwf/group-meeting-ppt.git ~/.codebuddy/skills/group-meeting-ppt
+```
+
+项目级技能放在仓库的 `.codebuddy/skills/` 下。
+
+安装后新开一个会话即可。提到「组会 PPT」「论文分享」时 agent 会按 description 自动调用；也可以显式调用：Claude Code 用 `/group-meeting-ppt`，Codex 用 `$group-meeting-ppt`（`/skills` 可查看技能列表），WorkBuddy 用 `@skill:group-meeting-ppt`。
 
 ## 依赖
 
@@ -43,17 +55,19 @@ pip install -r requirements.txt   # lxml、Pillow、numpy
 | 命令 | 用途 | macOS | Ubuntu / Debian |
 | --- | --- | --- | --- |
 | `pdfinfo` `pdftotext` `pdftohtml` `pdftoppm` | 读论文、裁图 | `brew install poppler` | `sudo apt install poppler-utils` |
-| `libreoffice` | 仅校验步骤导出 PDF | `brew install --cask libreoffice` | `sudo apt install libreoffice` |
+| `libreoffice` 或 `soffice` | 仅校验步骤导出 PDF | `brew install --cask libreoffice` | `sudo apt install libreoffice` |
+
+Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `conda install -c conda-forge poppler`；LibreOffice 安装后需要把程序目录加入 PATH。
 
 字体：绘制横幅需要一个中文无衬线字体和一个西文衬线粗体字体。macOS 自带 PingFang 或 Hiragino Sans GB 与 Times New Roman；Linux 需 Noto Sans CJK（或文泉驿）与 Liberation / DejaVu；Windows 使用微软雅黑与 Times New Roman。候选路径见 `scripts/banner.py`。
 
 ## 使用
 
-在 Claude Code 中直接描述任务，例如：
+在 agent 会话中直接描述任务，例如：
 
 > 用 group-meeting-ppt 做一份组会 PPT：论文在 `~/papers/attention-is-all-you-need.pdf`，汇报人张三，XX大学计算机学院，智能计算实验室，日期 2026 年 10 月，另配一份 8 分钟演讲稿。
 
-信息缺失时：姓名缺失则封面只写「汇报人」；学校、学院、实验室缺失时用 `XX大学`、`XX学院`、`School of XX` 占位；没有 PDF 时 Claude 会询问论文标题或 arXiv 编号，据此组织内容。
+信息缺失时：姓名缺失则封面只写「汇报人」；学校、学院、实验室缺失时用 `XX大学`、`XX学院`、`School of XX` 占位；没有 PDF 时 agent 会询问论文标题或 arXiv 编号，据此组织内容。
 
 ## 工作流程
 
@@ -93,7 +107,7 @@ group-meeting-ppt/
 
 ## English
 
-A Claude Code skill that turns a paper PDF into a full Chinese group-meeting slide deck (`.pptx`) using a fixed template, with an optional 8-minute speech script. Requires Python with `lxml`, `Pillow`, `numpy`, plus poppler utilities and LibreOffice. See `SKILL.md` and `references/` for details.
+A cross-agent skill (Agent Skills format; works with Claude Code, OpenAI Codex, WorkBuddy and other compatible agents) that turns a paper PDF into a full Chinese group-meeting slide deck (`.pptx`) using a fixed template, with an optional 8-minute speech script. Requires Python with `lxml`, `Pillow`, `numpy`, plus poppler utilities and LibreOffice. See `SKILL.md` and `references/` for details.
 
 ## 许可
 

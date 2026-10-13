@@ -60,4 +60,4 @@ metadata:
 - `references/deck_schema.md`：内容 JSON 字段说明与版式示例。
 - `references/speech_guide.md`：演讲稿写作规范与时长控制。
 
-脚本依赖 `lxml`、`Pillow` 与 `numpy`，并使用系统命令 `pdfinfo`、`pdftotext`、`pdftohtml`、`pdftoppm`、`libreoffice`；横幅绘制需要 `scripts/banner.py` 中列出的中英文字体。缺失时用 `uv` 安装 Python 依赖。
+脚本依赖 `lxml`、`Pillow` 与 `numpy`，并使用系统命令 `pdfinfo`、`pdftotext`、`pdftohtml`、`pdftoppm`、`libreoffice`（或 `soffice`）；横幅绘制需要 `scripts/banner.py` 中列出的中英文字体。缺失时用 `uv` 安装 Python 依赖。

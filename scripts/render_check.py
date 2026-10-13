@@ -1,4 +1,5 @@
 import argparse
+import shutil
 import subprocess
 import zipfile
 from pathlib import Path
@@ -45,7 +46,10 @@ def main():
     else:
         print('未发现外部图片链接')
 
-    subprocess.run(['libreoffice', '--headless', '--convert-to', 'pdf',
+    soffice = shutil.which('libreoffice') or shutil.which('soffice')
+    if not soffice:
+        raise SystemExit('找不到 libreoffice 或 soffice 命令，请先安装 LibreOffice')
+    subprocess.run([soffice, '--headless', '--convert-to', 'pdf',
                     '--outdir', str(outdir), str(pptx)], check=True)
     pdf = outdir / (pptx.stem + '.pdf')
     info = subprocess.run(['pdfinfo', str(pdf)], capture_output=True,
