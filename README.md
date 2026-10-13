@@ -16,29 +16,17 @@
 
 ## 安装
 
-仓库根目录就是技能目录，克隆到对应 agent 的技能目录即可，不需要改动任何文件。未配置 SSH 时把地址换成 `https://github.com/inwf/group-meeting-ppt.git`。
+仓库根目录就是技能目录，克隆到对应 agent 的技能目录即可，不需要改动任何文件：
 
-**Claude Code**
-
-```bash
-git clone git@github.com:inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
-```
-
-**OpenAI Codex**（CLI、IDE 与应用）
+- Claude Code：`~/.claude/skills/group-meeting-ppt`
+- OpenAI Codex：`~/.agents/skills/group-meeting-ppt`（旧版兼容 `~/.codex/skills/`）
+- WorkBuddy / CodeBuddy：`~/.codebuddy/skills/group-meeting-ppt`
 
 ```bash
-git clone git@github.com:inwf/group-meeting-ppt.git ~/.agents/skills/group-meeting-ppt
+git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-旧版 Codex 的个人技能目录 `~/.codex/skills/` 也兼容；项目级技能放在仓库的 `.agents/skills/` 下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
-
-**WorkBuddy / CodeBuddy**
-
-```bash
-git clone git@github.com:inwf/group-meeting-ppt.git ~/.codebuddy/skills/group-meeting-ppt
-```
-
-项目级技能放在仓库的 `.codebuddy/skills/` 下。
+Codex 与 WorkBuddy 的项目级技能分别放在仓库的 `.agents/skills/` 与 `.codebuddy/skills/` 下；仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
 
 安装后新开一个会话即可。提到「组会 PPT」「论文分享」时 agent 会按 description 自动调用；也可以显式调用：Claude Code 用 `/group-meeting-ppt`，Codex 用 `$group-meeting-ppt`（`/skills` 可查看技能列表），WorkBuddy 用 `@skill:group-meeting-ppt`。
 
