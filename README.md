@@ -1,102 +1,178 @@
-# group-meeting-ppt
+<div align="center">
+  <h1>group-meeting-ppt</h1>
+  <p><strong>One paper PDF. A complete deck.</strong></p>
+  <p>An Agent Skills skill that turns a paper into a complete Chinese slide deck for paper sharing and group meetings.<br />Fixed template, automatic figure cropping, validated tables, optional 8-minute speech script.</p>
+  <p>
+    <a href="#quick-start"><strong>Quick start</strong></a> ·
+    <a href="#how-it-works">How it works</a> ·
+    <a href="#documentation">Documentation</a> ·
+    <a href="README.zh-CN.md">简体中文</a>
+  </p>
+  <p>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-3b7c57?style=flat-square" alt="MIT License" /></a>
+    <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent_Skills-standard-4B5563?style=flat-square" alt="Agent Skills standard" /></a>
+    <a href="requirements.txt"><img src="https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.8 or newer" /></a>
+    <img src="https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-555555?style=flat-square" alt="macOS, Linux and Windows" />
+  </p>
+</div>
 
-**简体中文** | [English](README.en.md)
+<br />
 
-一个 Agent Skills 技能：按固定模板生成中文组会汇报 PPT。给一篇论文 PDF（或论文标题），产出整套 `.pptx` 幻灯片，可选配 8 分钟演讲稿。
+## Built for the next group meeting
 
-技能遵循 [Agent Skills](https://agentskills.io) 开放标准（`SKILL.md` 加脚本与资源目录），任何支持该标准的 agent 都能直接使用，目前已有 40 多个 agent 支持。安装后，agent 会按 `assets/template.pptx` 的版式自动生成封面、五章节分节页、内容页与致谢页，并校验表格排版与图片链接。
+Preparing a group-meeting deck means reading a paper closely, picking figures, rebuilding the same layout once more, and checking every table by hand. This skill takes that pass off your plate: point it at a paper PDF and it produces a complete Chinese slide deck, from the cover to the closing page.
 
-## 功能
+It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md` plus script and asset directories), so it runs in any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI, WorkBuddy and 40+ others. The deck is rebuilt from the layout of `assets/template.pptx`, and numbers, metric names and experimental settings stay faithful to the paper.
 
-- **读论文**：从 PDF 提取标题、作者、页数、摘要与 arXiv 编号
-- **自动裁图**：按页内坐标从论文中以 600 DPI 裁剪关键插图
-- **整套幻灯片**：封面、提纲、研究背景 / 研究思路 / 算法框架 / 实验结果 / 总结五章分节页、内容页、致谢页
-- **三种内容版式**：纯文字、图文、表格；表格列宽不齐、重叠、越界会直接报错
-- **生成校验**：检查 pptx 是否含外部图片链接（PowerPoint 打开时会因此提示阻止自动下载），并用 LibreOffice 导出 PDF 核对页数
-- **演讲稿**：按页讲稿，脚本统计汉字数与预计时长（260 到 270 字/分钟）
-- **占位替换**：学校、学院、实验室名称自动绘入页眉与封面横幅，并写入文档属性
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>📄 Read the paper</h3>
+      Pull the title, authors, page count, abstract and arXiv ID straight from the PDF, then organize the content into the five fixed chapters.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🖼️ Crop the figures</h3>
+      Key figures are cut out of the PDF at 600 DPI using in-page coordinates. No manual screenshots, no blurry crops.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🗂️ Fixed, polished layout</h3>
+      Cover, outline, five section dividers, content pages and a closing page, all rebuilt from the template's own layouts.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <h3>📊 Three content layouts</h3>
+      Text-only, figure and table. Misaligned, overlapping or out-of-bounds tables fail loudly instead of shipping broken slides.
+    </td>
+    <td valign="top">
+      <h3>✅ Validate before you present</h3>
+      The pptx is checked for external image links, and a LibreOffice PDF export verifies the page count.
+    </td>
+    <td valign="top">
+      <h3>🎤 Optional speech script</h3>
+      A per-page script with a character count and an estimated duration, aimed at an 8-minute slot.
+    </td>
+  </tr>
+</table>
 
-## 安装
+## Quick start
 
-仓库根目录就是技能目录，克隆到该 agent 的技能目录即可，不需要改动任何文件。常见 agent 的技能目录示例：
+### 1. Install the skill
 
-- Claude Code：`~/.claude/skills/group-meeting-ppt`
-- OpenAI Codex：`~/.codex/skills/group-meeting-ppt`
-- Cursor：`~/.cursor/skills/group-meeting-ppt`
-- Gemini CLI：`~/.gemini/skills/group-meeting-ppt`
-- WorkBuddy / CodeBuddy：`~/.codebuddy/skills/group-meeting-ppt`
+The repository root is the skill directory. Clone it into the skills directory of your agent; no files need to be modified.
+
+| Agent | Skills directory |
+| --- | --- |
+| Claude Code | `~/.claude/skills/group-meeting-ppt` |
+| OpenAI Codex | `~/.codex/skills/group-meeting-ppt` |
+| Cursor | `~/.cursor/skills/group-meeting-ppt` |
+| Gemini CLI | `~/.gemini/skills/group-meeting-ppt` |
+| WorkBuddy / CodeBuddy | `~/.codebuddy/skills/group-meeting-ppt` |
 
 ```bash
 git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-其他 agent 同理，换成它的技能目录即可；项目级安装放在仓库的 `.agents/skills/`（多数 agent 识别的通用位置）下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
+<details>
+<summary><strong>Other agents and project-level installs</strong></summary>
 
-安装后新开一个会话即可。提到「组会 PPT」「论文分享」时 agent 会按 description 自动调用；显式调用方式各 agent 略有不同，例如 Claude Code 的 `/group-meeting-ppt`、Codex 的 `$group-meeting-ppt`。
+For other agents, use their own skills directory. For a project-level install, place the skill under `.agents/skills/` in the repository, the common location recognized by most agents. `agents/openai.yaml` provides the display name, short description and default prompt for Codex.
 
-## 依赖
+</details>
 
-Python 包（在技能目录下安装）：
+### 2. Install dependencies
+
+Python packages, plus poppler for reading and cropping PDFs. LibreOffice is only needed by the validation step.
 
 ```bash
-pip install -r requirements.txt   # lxml、Pillow、numpy
+pip install -r requirements.txt   # lxml, Pillow, numpy
 ```
 
-系统命令：
-
-| 命令 | 用途 | macOS | Ubuntu / Debian |
+| Dependency | Purpose | macOS | Ubuntu / Debian |
 | --- | --- | --- | --- |
-| `pdfinfo` `pdftotext` `pdftohtml` `pdftoppm` | 读论文、裁图 | `brew install poppler` | `sudo apt install poppler-utils` |
-| `libreoffice` 或 `soffice` | 仅校验步骤导出 PDF | `brew install --cask libreoffice` | `sudo apt install libreoffice` |
+| poppler (`pdfinfo` `pdftotext` `pdftohtml` `pdftoppm`) | reading papers, cropping figures | `brew install poppler` | `sudo apt install poppler-utils` |
+| LibreOffice (`libreoffice` or `soffice`) | PDF export in the validation step | `brew install --cask libreoffice` | `sudo apt install libreoffice` |
 
-Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `conda install -c conda-forge poppler`；LibreOffice 安装后需要把程序目录加入 PATH。
+<details>
+<summary><strong>Windows and font notes</strong></summary>
 
-字体：绘制横幅需要一个中文无衬线字体和一个西文衬线粗体字体。macOS 自带 PingFang 或 Hiragino Sans GB 与 Times New Roman；Linux 需 Noto Sans CJK（或文泉驿）与 Liberation / DejaVu；Windows 使用微软雅黑与 Times New Roman。候选路径见 `scripts/banner.py`。
+On Windows, poppler has no official installer; use `scoop install poppler` or `conda install -c conda-forge poppler`, and add the LibreOffice program directory to `PATH`.
 
-## 使用
+Drawing the banners needs one CJK sans-serif font and one Latin serif bold font. macOS ships PingFang or Hiragino Sans GB and Times New Roman; Linux needs Noto Sans CJK (or WenQuanYi) and Liberation / DejaVu; Windows uses Microsoft YaHei and Times New Roman. Candidate paths are listed in `scripts/banner.py`.
 
-在 agent 会话中直接描述任务，例如：
+</details>
 
-> 用 group-meeting-ppt 做一份组会 PPT：论文在 `~/papers/attention-is-all-you-need.pdf`，汇报人张三，XX大学计算机学院，智能计算实验室，日期 2026 年 10 月，另配一份 8 分钟演讲稿。
+### 3. Ask your agent for a deck
 
-信息缺失时：姓名缺失则封面只写「汇报人」；学校、学院、实验室缺失时用 `XX大学`、`XX学院`、`School of XX` 占位；没有 PDF 时 agent 会询问论文标题或 arXiv 编号，据此组织内容。
+Describe the task in any session. The agent picks the skill up from its description, and it can also be invoked explicitly (`/group-meeting-ppt` in Claude Code, `$group-meeting-ppt` in Codex).
 
-## 工作流程
+> Use group-meeting-ppt to make a group-meeting deck: the paper is at `~/papers/attention-is-all-you-need.pdf`, presenter Zhang San, XX University School of Computer Science, Intelligent Computing Lab, date October 2026, and an 8-minute speech script.
 
-1. `scripts/read_paper.py` 读取论文元信息与摘要
-2. `scripts/extract_figures.py` 从 PDF 裁出关键插图
-3. 按 `references/deck_schema.md` 组织内容 JSON
-4. `scripts/build_deck.py` 解包模板、重建全部幻灯片并打包
-5. `scripts/render_check.py` 检查外部链接并用 LibreOffice 导出 PDF 核对页数
-6. 按 `references/speech_guide.md` 写演讲稿，`scripts/count_speech.py` 统计字数与时长
+The deck itself is written in Chinese. Missing details fall back to generic placeholders (汇报人, `XX大学`, `XX学院`), and without a PDF the agent asks for the paper title or arXiv ID.
 
-## 目录结构
+> [!IMPORTANT]
+> `assets/template.pptx` ships with generic school and college names. Do not commit a template that contains personal information.
+
+## How it works
+
+A typical run takes six steps:
+
+1. **Read the paper.** `scripts/read_paper.py` extracts the title, authors, page count, abstract and arXiv ID.
+2. **Crop the figures.** `scripts/extract_figures.py` cuts key figures out of the PDF at 600 DPI.
+3. **Write the content.** The agent organizes the deck into the five fixed chapters and writes a content JSON per [`references/deck_schema.md`](references/deck_schema.md).
+4. **Build.** `scripts/build_deck.py` unpacks the template, rebuilds every slide and packages the pptx.
+5. **Validate.** `scripts/render_check.py` checks for external image links and exports a PDF via LibreOffice to verify the page count.
+6. **Speak.** Optionally, write a per-page script per [`references/speech_guide.md`](references/speech_guide.md); `scripts/count_speech.py` counts characters and estimates the duration.
+
+### The generated deck
+
+| Part | Content |
+| --- | --- |
+| Cover | English and Chinese title, venue, presenter, date |
+| Outline | The five chapters at a glance |
+| Section dividers | The fixed five chapters: research background, approach, algorithm framework, experiments, conclusion |
+| Content pages | 4 to 6 bullets per page, in text-only, figure or table layouts |
+| Closing | Thanks page with the paper reference |
+
+School, college and lab names are drawn into the header and cover banners from the metadata you provide, so no manual editing of the template is needed.
+
+## Documentation
+
+| Looking for | Start here |
+| --- | --- |
+| Skill workflow and content rules | [`SKILL.md`](SKILL.md) |
+| Content JSON fields and layouts | [`references/deck_schema.md`](references/deck_schema.md) |
+| Speech script writing guide | [`references/speech_guide.md`](references/speech_guide.md) |
+| 中文说明 | [简体中文 README](README.zh-CN.md) |
+
+## Repository layout
 
 ```
 group-meeting-ppt/
-├── SKILL.md                # 技能入口：流程与内容规范
-├── agents/openai.yaml      # OpenAI 侧（Codex）的展示元数据
-├── assets/template.pptx    # 版式模板（封面、分节页、内容页母版）
+├── SKILL.md                # skill entry: workflow and content rules
+├── agents/openai.yaml      # UI metadata for Codex
+├── assets/template.pptx    # layout template (cover, dividers, content master)
 ├── references/
-│   ├── deck_schema.md      # 内容 JSON 字段说明
-│   └── speech_guide.md     # 演讲稿写作规范
+│   ├── deck_schema.md      # content JSON field reference
+│   └── speech_guide.md     # speech script writing guide
 └── scripts/
-    ├── build_deck.py       # 主构建脚本
-    ├── pptxkit.py          # 低层 OOXML 组装
-    ├── banner.py           # 绘制校徽、页眉与封面横幅
-    ├── read_paper.py       # 读取论文元信息
-    ├── extract_figures.py  # 从 PDF 裁剪插图
-    ├── render_check.py     # 外部链接检查与 PDF 导出
-    └── count_speech.py     # 演讲稿字数统计
+    ├── build_deck.py       # main build script
+    ├── pptxkit.py          # low-level OOXML assembly
+    ├── banner.py           # draws the emblem, header and cover banners
+    ├── read_paper.py       # reads paper metadata
+    ├── extract_figures.py  # crops figures from the PDF
+    ├── render_check.py     # external-link check and PDF export
+    └── count_speech.py     # speech character count
 ```
 
-## 内容规范
+## Content rules
 
-- 章节固定为研究背景、研究思路、算法框架、实验结果、总结
-- 每页要点 4 到 6 条，单条不超过 60 个汉字，符号与下标使用 Unicode（例如 `α`、`N̂`、`R₁`）
-- 数值、指标名称、实验设置必须与论文一致，论文没有给出的结论不补写
-- `assets/template.pptx` 内的学校与学院是通用占位；不要把带个人信息的模板提交进仓库
+- The five chapters are fixed: research background, approach, algorithm framework, experiments, conclusion
+- 4 to 6 bullet points per page, each under 60 Chinese characters; use Unicode for symbols and subscripts (e.g. `α`, `N̂`, `R₁`)
+- Numbers, metric names and experimental settings must match the paper; do not add conclusions the paper does not state
 
-## 许可
+## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 inwf.
+
+<p align="center"><sub>If group-meeting-ppt saves you time before the next group meeting, a <a href="https://github.com/inwf/group-meeting-ppt">GitHub star</a> helps others find it.</sub></p>
