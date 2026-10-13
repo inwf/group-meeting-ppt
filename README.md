@@ -2,7 +2,7 @@
 
 一个 Agent Skills 技能：按固定模板生成中文组会汇报 PPT。给一篇论文 PDF（或论文标题），产出整套 `.pptx` 幻灯片，可选配 8 分钟演讲稿。
 
-技能遵循开放的 Agent Skills 标准（`SKILL.md` 加脚本与资源目录），可用于 Claude Code、OpenAI Codex、WorkBuddy（CodeBuddy）等支持该标准的 agent。安装后，agent 会按 `assets/template.pptx` 的版式自动生成封面、五章节分节页、内容页与致谢页，并校验表格排版与图片链接。
+技能遵循 [Agent Skills](https://agentskills.io) 开放标准（`SKILL.md` 加脚本与资源目录），任何支持该标准的 agent 都能直接使用，目前已有 40 多个 agent 支持。安装后，agent 会按 `assets/template.pptx` 的版式自动生成封面、五章节分节页、内容页与致谢页，并校验表格排版与图片链接。
 
 ## 功能
 
@@ -16,19 +16,21 @@
 
 ## 安装
 
-仓库根目录就是技能目录，克隆到对应 agent 的技能目录即可，不需要改动任何文件：
+仓库根目录就是技能目录，克隆到该 agent 的技能目录即可，不需要改动任何文件。常见 agent 的技能目录示例：
 
 - Claude Code：`~/.claude/skills/group-meeting-ppt`
-- OpenAI Codex：`~/.agents/skills/group-meeting-ppt`（旧版兼容 `~/.codex/skills/`）
+- OpenAI Codex：`~/.codex/skills/group-meeting-ppt`
+- Cursor：`~/.cursor/skills/group-meeting-ppt`
+- Gemini CLI：`~/.gemini/skills/group-meeting-ppt`
 - WorkBuddy / CodeBuddy：`~/.codebuddy/skills/group-meeting-ppt`
 
 ```bash
 git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-Codex 与 WorkBuddy 的项目级技能分别放在仓库的 `.agents/skills/` 与 `.codebuddy/skills/` 下；仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
+其他 agent 同理，换成它的技能目录即可；项目级安装放在仓库的 `.agents/skills/`（多数 agent 识别的通用位置）下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
 
-安装后新开一个会话即可。提到「组会 PPT」「论文分享」时 agent 会按 description 自动调用；也可以显式调用：Claude Code 用 `/group-meeting-ppt`，Codex 用 `$group-meeting-ppt`（`/skills` 可查看技能列表），WorkBuddy 用 `@skill:group-meeting-ppt`。
+安装后新开一个会话即可。提到「组会 PPT」「论文分享」时 agent 会按 description 自动调用；显式调用方式各 agent 略有不同，例如 Claude Code 的 `/group-meeting-ppt`、Codex 的 `$group-meeting-ppt`。
 
 ## 依赖
 
@@ -95,7 +97,7 @@ group-meeting-ppt/
 
 ## English
 
-A cross-agent skill (Agent Skills format; works with Claude Code, OpenAI Codex, WorkBuddy and other compatible agents) that turns a paper PDF into a full Chinese group-meeting slide deck (`.pptx`) using a fixed template, with an optional 8-minute speech script. Requires Python with `lxml`, `Pillow`, `numpy`, plus poppler utilities and LibreOffice. See `SKILL.md` and `references/` for details.
+A skill in the open [Agent Skills](https://agentskills.io) format, usable with any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI and WorkBuddy. It turns a paper PDF into a full Chinese group-meeting slide deck (`.pptx`) using a fixed template, with an optional 8-minute speech script. Requires Python with `lxml`, `Pillow`, `numpy`, plus poppler utilities and LibreOffice. See `SKILL.md` and `references/` for details.
 
 ## 许可
 
