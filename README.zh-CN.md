@@ -59,7 +59,9 @@
 
 ### 1. 安装技能
 
-仓库根目录就是技能目录，克隆到 agent 的技能目录即可，不需要改动任何文件。
+仓库根目录就是技能目录，不需要改动任何文件。任何支持 [Agent Skills](https://agentskills.io) 标准的 agent 都能用，[目前已有 40 多个](https://agentskills.io/clients)。两种安装方式。
+
+**克隆到 agent 的技能目录。** 几个示例：
 
 | Agent | 技能目录 |
 | --- | --- |
@@ -73,12 +75,13 @@
 git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-<details>
-<summary><strong>其他 agent 与项目级安装</strong></summary>
+其他 agent 换成它自己的技能目录即可；项目级安装放在仓库的 `.agents/skills/`（标准约定的跨 agent 位置）下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
 
-其他 agent 换成它自己的技能目录即可。项目级安装放在仓库的 `.agents/skills/`（多数 agent 识别的通用位置）下。仓库内的 `agents/openai.yaml` 提供 Codex 的显示名称、简介与默认提示词。
+**或用 [skills CLI](https://skills.sh) 安装**，支持它适配的全部 agent（`-a` 指定 agent，`-g` 安装到用户级）：
 
-</details>
+```bash
+npx skills add inwf/group-meeting-ppt -g
+```
 
 ### 2. 安装依赖
 

@@ -59,7 +59,9 @@ It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md
 
 ### 1. Install the skill
 
-The repository root is the skill directory. Clone it into the skills directory of your agent; no files need to be modified.
+The repository root is the skill directory; no files need to be modified. Any agent that supports the [Agent Skills](https://agentskills.io) standard works — [40+ agents do today](https://agentskills.io/clients). Two ways to install.
+
+**Clone into your agent's skills directory.** A few examples:
 
 | Agent | Skills directory |
 | --- | --- |
@@ -73,12 +75,13 @@ The repository root is the skill directory. Clone it into the skills directory o
 git clone https://github.com/inwf/group-meeting-ppt.git ~/.claude/skills/group-meeting-ppt
 ```
 
-<details>
-<summary><strong>Other agents and project-level installs</strong></summary>
+For any other agent, use its own skills directory; project-level installs go under `.agents/skills/` in the repository, the cross-agent location defined by the standard. `agents/openai.yaml` provides Codex's display name, short description and default prompt.
 
-For other agents, use their own skills directory. For a project-level install, place the skill under `.agents/skills/` in the repository, the common location recognized by most agents. `agents/openai.yaml` provides the display name, short description and default prompt for Codex.
+**Or use the [skills CLI](https://skills.sh)**, which installs to any agent it supports (`-a` picks which, `-g` installs user-level):
 
-</details>
+```bash
+npx skills add inwf/group-meeting-ppt -g
+```
 
 ### 2. Install dependencies
 
