@@ -111,7 +111,7 @@ Describe the task in any session. The agent picks the skill up from its descript
 
 > Use group-meeting-ppt to make a group-meeting deck: the paper is at `~/papers/attention-is-all-you-need.pdf`, presenter Zhang San, XX University School of Computer Science, Intelligent Computing Lab, date October 2026, and an 8-minute speech script.
 
-The deck itself is written in Chinese. Missing details fall back to generic placeholders (汇报人, `XX大学`, `XX学院`), and without a PDF the agent asks for the paper title or arXiv ID.
+The agent first asks for the presenter name, school, college and lab; answer "use defaults" to keep the generic placeholders. When you name a school, it fetches that school's emblem from [urongda.com](https://www.urongda.com/) and draws it into the banners. The deck itself is written in Chinese, and without a PDF the agent asks for the paper title or arXiv ID.
 
 > [!IMPORTANT]
 > `assets/template.pptx` ships with generic school and college names. Do not commit a template that contains personal information.
@@ -137,7 +137,7 @@ A typical run takes six steps:
 | Content pages | 4 to 6 bullets per page, in text-only, figure or table layouts |
 | Closing | Thanks page with the paper reference |
 
-School, college and lab names are drawn into the header and cover banners from the metadata you provide, so no manual editing of the template is needed.
+School, college and lab names are drawn into the header and cover banners from the metadata you provide, and a real school emblem fetched from [urongda.com](https://www.urongda.com/) (or one you supply) replaces the generic emblem, so no manual editing of the template is needed.
 
 ## Documentation
 
@@ -164,6 +164,7 @@ group-meeting-ppt/
     ├── banner.py           # draws the emblem, header and cover banners
     ├── read_paper.py       # reads paper metadata
     ├── extract_figures.py  # crops figures from the PDF
+    ├── fetch_emblem.py     # downloads a school emblem from urongda.com
     ├── render_check.py     # external-link check and PDF export
     └── count_speech.py     # speech character count
 ```

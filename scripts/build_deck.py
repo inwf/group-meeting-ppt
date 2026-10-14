@@ -229,7 +229,7 @@ def fix_content_types(build, n):
                    etree.tostring(root))
 
 
-def personalize(template, meta, n_slides):
+def personalize(template, meta, n_slides, emblem=None):
     cn = meta.get('college_cn') or GENERIC['college_cn']
     en = meta.get('college_en') or GENERIC['college_en']
     school = meta.get('school') or GENERIC['school']
@@ -240,10 +240,11 @@ def personalize(template, meta, n_slides):
     header = media / 'image1.png'
     with Image.open(header) as im:
         header.write_bytes(banner.header_png(school, school_en, lab_cn, lab_en,
-                                             size=im.size))
+                                             size=im.size, emblem=emblem))
     cover = media / 'image3.jpeg'
     with Image.open(cover) as im:
-        cover.write_bytes(banner.cover_jpeg(school, lab_cn, lab_en, size=im.size))
+        cover.write_bytes(banner.cover_jpeg(school, lab_cn, lab_en, size=im.size,
+                                            emblem=emblem))
     thumb = template / 'docProps' / 'thumbnail.jpeg'
     with Image.open(thumb) as im:
         thumb.write_bytes(banner.thumb_jpeg(im.width, im.height))
@@ -279,6 +280,7 @@ def main():
     ap.add_argument('--media', required=True, help='图片目录')
     ap.add_argument('--work', required=True, help='中间目录')
     ap.add_argument('--template', required=True, help='模板 pptx 路径')
+    ap.add_argument('--emblem', help='校徽图片路径（可选），绘制进页眉与封面')
     args = ap.parse_args()
 
     deck = json.loads(Path(args.deck).read_text(encoding='utf-8'))
@@ -301,8 +303,16 @@ def main():
     with zipfile.ZipFile(args.template) as z:
         z.extractall(template)
 
+    emblem = None
+    if args.emblem:
+        ep = Path(args.emblem)
+        if not ep.exists():
+            raise SystemExit(f'找不到校徽文件 {ep}')
+        with Image.open(ep) as im:
+            emblem = im.convert('RGBA')
+
     slides = plan(deck)
-    personalize(template, meta, len(slides))
+    personalize(template, meta, len(slides), emblem)
 
     if build.exists():
         shutil.rmtree(build)

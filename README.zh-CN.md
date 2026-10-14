@@ -111,7 +111,7 @@ Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `
 
 > 用 group-meeting-ppt 做一份组会 PPT：论文在 `~/papers/attention-is-all-you-need.pdf`，汇报人张三，XX大学计算机学院，智能计算实验室，日期 2026 年 10 月，另配一份 8 分钟演讲稿。
 
-幻灯片内容本身是中文。信息缺失时用通用占位补全（汇报人、`XX大学`、`XX学院`）；没有 PDF 时 agent 会询问论文标题或 arXiv 编号。
+开场 agent 会询问姓名、学校、学院（专业）与实验室，回答「用默认」即使用通用占位（汇报人、`XX大学`、`XX学院`）；提供了学校时，会从 [urongda.com](https://www.urongda.com/) 获取该校校徽并绘制进页眉与封面。幻灯片内容本身是中文；没有 PDF 时 agent 会询问论文标题或 arXiv 编号。
 
 > [!IMPORTANT]
 > `assets/template.pptx` 内的学校与学院是通用占位。不要把带个人信息的模板提交进仓库。
@@ -137,7 +137,7 @@ Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `
 | 内容页 | 每页 4 到 6 条要点，纯文字、图文或表格版式 |
 | 致谢页 | 谢谢页与论文出处 |
 
-学校、学院与实验室名称会从你提供的信息绘制进页眉与封面横幅，不需要手动改模板。
+学校、学院与实验室名称会从你提供的信息绘制进页眉与封面横幅；提供学校名称时，从 [urongda.com](https://www.urongda.com/) 获取的真实校徽会替换通用校徽，不需要手动改模板。
 
 ## 文档
 
@@ -164,6 +164,7 @@ group-meeting-ppt/
     ├── banner.py           # 绘制校徽、页眉与封面横幅
     ├── read_paper.py       # 读取论文元信息
     ├── extract_figures.py  # 从 PDF 裁剪插图
+    ├── fetch_emblem.py     # 从 urongda.com 下载学校校徽
     ├── render_check.py     # 外部链接检查与 PDF 导出
     └── count_speech.py     # 演讲稿字数统计
 ```

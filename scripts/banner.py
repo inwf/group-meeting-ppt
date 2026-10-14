@@ -1,7 +1,7 @@
 import io
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 CN_FONTS = [
     '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
@@ -27,6 +27,7 @@ NAVY_TOP = (1, 65, 129)
 NAVY_BOTTOM = (46, 127, 208)
 
 EMBLEM_BOX = (60, 26, 116, 86)
+COVER_EMBLEM_BOX = (50, 36, 154, 140)
 SCHOOL_CN_BOX = (129, 27, 278, 60)
 SCHOOL_EN_BOX = (129, 60, 278, 77)
 DIVIDER = (282, 35, 284, 73)
@@ -68,6 +69,23 @@ def draw_emblem(canvas, scale):
            width=int(1.2 * scale))
 
 
+def paste_emblem(canvas, emblem, box, scale, circular=False):
+    # 把校徽等比缩放并居中贴入 box（box 为未乘 scale 的设计坐标）
+    x0, y0, x1, y1 = [v * scale for v in box]
+    bw, bh = x1 - x0, y1 - y0
+    k = min(bw / emblem.width, bh / emblem.height)
+    tw, th = max(1, round(emblem.width * k)), max(1, round(emblem.height * k))
+    px, py = int(x0 + (bw - tw) / 2), int(y0 + (bh - th) / 2)
+    im = emblem.resize((tw, th), Image.LANCZOS)
+    mask = im.getchannel('A')
+    if circular:
+        disc = Image.new('L', (bw, bh), 0)
+        ImageDraw.Draw(disc).ellipse((0, 0, bw - 1, bh - 1), fill=255)
+        mask = ImageChops.multiply(
+            mask, disc.crop((px - x0, py - y0, px - x0 + tw, py - y0 + th)))
+    canvas.paste(im, (px, py), mask)
+
+
 def centered(canvas, box, text, fnt, fill, scale):
     x0, y0, x1, y1 = [v * scale for v in box]
     d = ImageDraw.Draw(canvas)
@@ -77,7 +95,8 @@ def centered(canvas, box, text, fnt, fill, scale):
     d.text((x, y), text, font=fnt, fill=fill)
 
 
-def header_png(school_cn, school_en, lab_cn, lab_en, size=(960, 720), scale=6):
+def header_png(school_cn, school_en, lab_cn, lab_en, size=(960, 720), scale=6,
+               emblem=None):
     w, h = size
     band = 90
     canvas = Image.new('RGB', (w * scale, h * scale), WHITE)
@@ -88,7 +107,10 @@ def header_png(school_cn, school_en, lab_cn, lab_en, size=(960, 720), scale=6):
     d.rectangle((592 * scale, 0, w * scale, 75 * scale), fill=NAVY_TOP)
     d.rectangle((592 * scale, 75 * scale, w * scale, 86 * scale),
                 fill=(196, 196, 196))
-    draw_emblem(canvas, scale)
+    if emblem is not None:
+        paste_emblem(canvas, emblem, EMBLEM_BOX, scale)
+    else:
+        draw_emblem(canvas, scale)
     centered(canvas, SCHOOL_CN_BOX, school_cn, cn_font(30 * scale), INK, scale)
     centered(canvas, SCHOOL_EN_BOX, school_en, en_font(15 * scale), INK, scale)
     x0, y0, x1, y1 = [v * scale for v in DIVIDER]
@@ -110,15 +132,21 @@ def gradient(width, height):
     return np.clip(np.repeat(rows[:, None, :], width, axis=1), 0, 255).astype(np.uint8)
 
 
-def cover_jpeg(school_cn, lab_cn, lab_en, size=(1000, 184), scale=3):
+def cover_jpeg(school_cn, lab_cn, lab_en, size=(1000, 184), scale=3,
+               emblem=None):
     w, h = size
     canvas = Image.fromarray(gradient(w * scale, h * scale))
     d = ImageDraw.Draw(canvas)
     d.ellipse([(36 * scale, 22 * scale), (168 * scale, 154 * scale)],
               outline=WHITE, width=int(2.5 * scale))
-    d.ellipse([(50 * scale, 36 * scale), (154 * scale, 140 * scale)],
-              outline=WHITE, width=int(1.2 * scale))
-    centered(canvas, (30, 34, 174, 142), school_cn, cn_font(30 * scale), WHITE, scale)
+    if emblem is not None:
+        d.ellipse([(50 * scale, 36 * scale), (154 * scale, 140 * scale)],
+                  fill=WHITE)
+        paste_emblem(canvas, emblem, COVER_EMBLEM_BOX, scale, circular=True)
+    else:
+        d.ellipse([(50 * scale, 36 * scale), (154 * scale, 140 * scale)],
+                  outline=WHITE, width=int(1.2 * scale))
+        centered(canvas, (30, 34, 174, 142), school_cn, cn_font(30 * scale), WHITE, scale)
     centered(canvas, (200, 40, 960, 88), lab_cn, cn_font(40 * scale), WHITE, scale)
     centered(canvas, (200, 96, 960, 140), lab_en, en_font(26 * scale), PALE, scale)
     out = canvas.resize((w, h), Image.LANCZOS)

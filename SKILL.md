@@ -11,7 +11,7 @@ metadata:
 
 ## 输入信息
 
-从用户消息中读取姓名、学校、学院、实验室、论文 PDF 路径、论文标题、汇报场景。缺省处理：
+开场先询问用户的个人信息：姓名、学校、学院（专业）、实验室，并说明可以回答「用默认信息」跳过。用户消息里已给出的不要重复问；论文 PDF 路径、论文标题、汇报场景也从消息或询问中获得。缺省处理：
 
 - 姓名缺失：封面只写「汇报人」，不写占位符以外的姓名。
 - 学校缺失：使用 `XX大学`。
@@ -22,6 +22,16 @@ metadata:
 
 通用名称只用于填空，不要写进正文段落。不要在产出物中写入任何用户未提供过的个人信息。
 
+## 校徽
+
+用户提供了学校名称时，主动获取该校校徽，生成时用 `--emblem` 画进页眉与封面：
+
+1. 先尝试下载：在 urongda.com（校徽大全）找到该校校徽，执行 `python3 scripts/fetch_emblem.py --school <学校名> --out <中间目录>/emblem.png`。
+2. 下载失败（找不到该校、站点不可用等）时，请用户提供校徽图片路径，或提示用户到 https://www.urongda.com/ 自行下载后给出文件路径。
+3. 用户用默认信息，或明确不要校徽时跳过，`build_deck.py` 会绘制通用校徽。
+
+校徽图片 PNG（可带透明通道）或 JPG 均可，正方形或圆形图案效果最好。
+
 ## 流程
 
 下面命令中的 `scripts/`、`assets/`、`references/` 路径都相对本技能目录，执行时先切换到技能目录，或把路径换成绝对路径。
@@ -29,7 +39,7 @@ metadata:
 1. 读取论文。有 PDF 时执行 `python3 scripts/read_paper.py --pdf <pdf>` 取得标题、作者、页数、摘要与首页行，用于填写封面和正文。再通读全文，按 `references/deck_schema.md` 的五个章节整理内容。
 2. 挑选配图。用 `python3 scripts/extract_figures.py --pdf <pdf> --pages 3,6,7 --out <图片目录> --work <中间目录>` 从论文中裁出关键插图，脚本会按页内坐标裁剪并输出文件名。只保留能说明机制或结果的图，其余页面用文字要点。
 3. 写内容 JSON。按 `references/deck_schema.md` 的字段组织 `meta` 与 `slides`，每个章节 3 到 6 页。数值、指标名称、实验设置必须与论文一致。
-4. 生成 PPT。执行：
+4. 生成 PPT。用户提供了学校时，先按「校徽」一节获取校徽文件，有校徽时在命令末尾加 `--emblem <校徽文件>`。执行：
 
    ```
    python3 scripts/build_deck.py --deck <内容.json> --out <输出.pptx> \
@@ -55,6 +65,7 @@ metadata:
 - `scripts/build_deck.py`：主构建脚本。
 - `scripts/read_paper.py`：读取论文元信息与摘要。
 - `scripts/extract_figures.py`：从 PDF 裁剪插图。
+- `scripts/fetch_emblem.py`：从 urongda.com 下载学校校徽。
 - `scripts/render_check.py`：外部链接检查与 PDF 导出。
 - `scripts/count_speech.py`：统计演讲稿汉字数与预计时长。
 - `references/deck_schema.md`：内容 JSON 字段说明与版式示例。
