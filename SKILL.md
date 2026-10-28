@@ -7,7 +7,7 @@ metadata:
 
 # 组会 PPT 生成
 
-用 `assets/template.pptx` 的封面、分节页、内容页版式生成整套汇报幻灯片，产出物是 `.pptx` 文件。内容来自用户提供的论文 PDF；没有 PDF 时按用户给出的论文标题和摘要组织内容。
+用 `assets/` 中的模板的封面、分节页、内容页版式生成整套汇报幻灯片，产出物是 `.pptx` 文件。内容来自用户提供的论文 PDF；没有 PDF 时按用户给出的论文标题和摘要组织内容。
 
 ## 输入信息
 
@@ -22,13 +22,25 @@ metadata:
 
 通用名称只用于填空，不要写进正文段落。不要在产出物中写入任何用户未提供过的个人信息。
 
+## 模板
+
+模板从 `assets/` 目录选取，`build_deck.py` 在省略 `--template` 时自动判断：
+
+1. `assets/` 中除 `template.pptx` 外只有一个 `.pptx` 时，视为用户自定义模板，直接使用。用户把带好学校名称、校徽、配色的 pptx 放进 `assets/` 即可，此时页眉与封面沿用模板内容，不再按 `meta` 重绘，也不需要下载校徽。仍有多个自定义模板时脚本会报错，这时让用户只保留一个，或用 `--template` 显式指定。
+2. 没有自定义模板时使用 `assets/template.pptx`（默认模板），并按 `meta` 重绘页眉与封面。
+3. 使用自定义模板但用户要求按个人信息重绘页眉与封面时，加 `--redraw-banners`；同时提供了 `--emblem` 时也会自动重绘。
+
+自定义模板必须基于默认模板修改：页面尺寸保持 4:3（9144000 × 6858000 EMU），保留全部版式、母版与所需媒体文件。不符合时脚本会报错并说明缺少什么。
+
 ## 校徽
 
-用户提供了学校名称时，主动获取该校校徽，生成时用 `--emblem` 画进页眉与封面：
+只在**使用默认模板**时获取校徽，生成时用 `--emblem` 画进页眉与封面：
 
 1. 先尝试下载：在 urongda.com（校徽大全）找到该校校徽，执行 `python3 scripts/fetch_emblem.py --school <学校名> --out <中间目录>/emblem.png`。
 2. 下载失败（找不到该校、站点不可用等）时，请用户提供校徽图片路径，或提示用户到 https://www.urongda.com/ 自行下载后给出文件路径。
 3. 用户用默认信息，或明确不要校徽时跳过，`build_deck.py` 会绘制通用校徽。
+
+使用自定义模板时，校徽应已画在模板里，不需要这一步；用户要求替换模板里的校徽时，可用 `--emblem <文件> --redraw-banners` 重绘。
 
 校徽图片 PNG（可带透明通道）或 JPG 均可，正方形或圆形图案效果最好。
 
@@ -39,11 +51,11 @@ metadata:
 1. 读取论文。有 PDF 时执行 `python3 scripts/read_paper.py --pdf <pdf>` 取得标题、作者、页数、摘要与首页行，用于填写封面和正文。再通读全文，按 `references/deck_schema.md` 的五个章节整理内容。
 2. 挑选配图。用 `python3 scripts/extract_figures.py --pdf <pdf> --pages 3,6,7 --out <图片目录> --work <中间目录>` 从论文中裁出关键插图，脚本会按页内坐标裁剪并输出文件名。只保留能说明机制或结果的图，其余页面用文字要点。
 3. 写内容 JSON。按 `references/deck_schema.md` 的字段组织 `meta` 与 `slides`，每个章节 3 到 6 页。数值、指标名称、实验设置必须与论文一致。
-4. 生成 PPT。用户提供了学校时，先按「校徽」一节获取校徽文件，有校徽时在命令末尾加 `--emblem <校徽文件>`。执行：
+4. 生成 PPT。省略 `--template`，脚本会自动选用 `assets/` 中的自定义模板或默认模板；需要校徽时按「校徽」一节获取并加 `--emblem <校徽文件>`。执行：
 
    ```
    python3 scripts/build_deck.py --deck <内容.json> --out <输出.pptx> \
-     --media <图片目录> --work <中间目录> --template assets/template.pptx
+     --media <图片目录> --work <中间目录>
    ```
 
    脚本会解包模板、替换学院名称与文档属性、重建全部幻灯片、写回内容类型表并打包。表格列宽不齐、表格重叠、表格越界都会直接报错。
@@ -59,7 +71,8 @@ metadata:
 
 ## 素材与脚本
 
-- `assets/template.pptx`：版式来源，包含封面、五套分节页、内容页母版与配色。素材内的学院与学校已是通用名称，页脚与文档属性中的占位由 `build_deck.py` 按 `meta` 替换，不要把带个人信息的模板直接放进来。
+- `assets/template.pptx`：默认版式来源，包含封面、五套分节页、内容页母版与配色。素材内的学院与学校已是通用名称，页脚与文档属性中的占位由 `build_deck.py` 按 `meta` 替换，不要把带个人信息的默认模板直接放进来。
+- `assets/` 中的其他 `.pptx`：用户自定义模板，优先于默认模板使用，页眉与封面保持模板原样。
 - `scripts/pptxkit.py`：低层 OOXML 组装函数，供 `build_deck.py` 调用。
 - `scripts/banner.py`：绘制通用校徽、页眉横幅与封面横幅，文字取自 `meta`。
 - `scripts/build_deck.py`：主构建脚本。

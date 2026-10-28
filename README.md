@@ -22,7 +22,7 @@
 
 Preparing a group-meeting deck means reading a paper closely, picking figures, rebuilding the same layout once more, and checking every table by hand. This skill takes that pass off your plate: point it at a paper PDF and it produces a complete Chinese slide deck, from the cover to the closing page.
 
-It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md` plus script and asset directories), so it runs in any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI, WorkBuddy and 40+ others. The deck is rebuilt from the layout of `assets/template.pptx`, and numbers, metric names and experimental settings stay faithful to the paper.
+It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md` plus script and asset directories), so it runs in any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI, WorkBuddy and 40+ others. The deck is rebuilt from the layout of the template in `assets/`: the bundled `template.pptx` by default, or your own deck dropped into the same folder. Numbers, metric names and experimental settings stay faithful to the paper.
 
 <table>
   <tr>
@@ -35,8 +35,8 @@ It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md
       Key figures are cut out of the PDF at 600 DPI using in-page coordinates. No manual screenshots, no blurry crops.
     </td>
     <td width="33%" valign="top">
-      <h3>🗂️ Fixed, polished layout</h3>
-      Cover, outline, five section dividers, content pages and a closing page, all rebuilt from the template's own layouts.
+      <h3>🗂️ Bundled or your own layout</h3>
+      Cover, outline, five section dividers, content pages and a closing page are rebuilt from the template. Drop a pptx with your own emblem and colors into assets/ to replace the default.
     </td>
   </tr>
   <tr>
@@ -114,7 +114,22 @@ Describe the task in any session. The agent picks the skill up from its descript
 The agent first asks for the presenter name, school, college and lab; answer "use defaults" to keep the generic placeholders. When you name a school, it fetches that school's emblem from [urongda.com](https://www.urongda.com/) and draws it into the banners. The deck itself is written in Chinese, and without a PDF the agent asks for the paper title or arXiv ID.
 
 > [!IMPORTANT]
-> `assets/template.pptx` ships with generic school and college names. Do not commit a template that contains personal information.
+> `assets/template.pptx` ships with generic school and college names. Custom templates are ignored by Git (`.gitignore` excludes every `assets/*.pptx` except the default).
+
+### 4. Optional: bring your own template
+
+Put a pptx with your emblem, school names and colors already in place into `assets/` (keep `template.pptx`), and the script prefers it automatically:
+
+```bash
+cp ~/Downloads/my-group-template.pptx ~/.claude/skills/group-meeting-ppt/assets/
+```
+
+Rules for a custom template:
+
+- Build it from the default template: keep the 4:3 page size (10 × 7.5 in) and all layouts, masters and required media files. Otherwise the script stops and lists what is missing.
+- The header and cover banners are kept as they are and are no longer redrawn from your details, so no emblem download is needed.
+- Only one custom template may sit in `assets/`; with more than one the script stops, so delete the extra file or pass `--template` explicitly.
+- To redraw the banners anyway, add `--redraw-banners`; combine it with `--emblem` to replace the emblem inside the template.
 
 ## How it works
 

@@ -114,7 +114,22 @@ Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `
 开场 agent 会询问姓名、学校、学院（专业）与实验室，回答「用默认」即使用通用占位（汇报人、`XX大学`、`XX学院`）；提供了学校时，会从 [urongda.com](https://www.urongda.com/) 获取该校校徽并绘制进页眉与封面。幻灯片内容本身是中文；没有 PDF 时 agent 会询问论文标题或 arXiv 编号。
 
 > [!IMPORTANT]
-> `assets/template.pptx` 内的学校与学院是通用占位。不要把带个人信息的模板提交进仓库。
+> `assets/template.pptx` 内的学校与学院是通用占位。自定义模板已被 Git 忽略（`.gitignore` 只保留默认模板，其余 `assets/*.pptx` 不提交）。
+
+### 4. 可选：使用自己的模板
+
+把校徽、学校名称、配色都已改好的 pptx 放进 `assets/`（保留 `template.pptx` 不删），脚本会自动优先使用它：
+
+```bash
+cp ~/Downloads/我的组会模板.pptx ~/.claude/skills/group-meeting-ppt/assets/
+```
+
+自定义模板的约定：
+
+- 必须基于默认模板修改：页面尺寸保持 4:3（10 × 7.5 英寸），保留全部版式、母版与所需媒体文件；否则脚本会报错并列出缺少的部件
+- 页眉与封面沿用模板原样，不再按个人信息重绘，也就不需要获取校徽
+- `assets/` 里只能放一个自定义模板；有多个时脚本会报错，删除多余文件或用 `--template` 显式指定
+- 仍要按新信息重绘页眉与封面时，加 `--redraw-banners`；配合 `--emblem` 可替换模板里的校徽
 
 ## 工作方式
 

@@ -17,3 +17,7 @@ venv/
 work/
 build/
 output/
+
+# 用户自定义模板（默认模板本身需要提交）
+assets/*.pptx
+!assets/template.pptx
