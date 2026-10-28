@@ -27,6 +27,7 @@ CT_NS = 'http://schemas.openxmlformats.org/package/2006/content-types'
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = SKILL_ROOT / 'assets'
+DEFAULT_TEMPLATE_DIR = ASSETS_DIR / 'default'
 DEFAULT_TEMPLATE_NAME = 'template.pptx'
 REQUIRED_PARTS = [
     'ppt/presentation.xml',
@@ -245,14 +246,14 @@ def fix_content_types(build, n):
 
 
 def find_template(explicit=None):
-    # 省略 --template 时：assets/ 中除 template.pptx 外的 .pptx 视为用户自定义模板
+    # 省略 --template 时：assets/ 根目录中的 .pptx 视为用户自定义模板，
+    # 没有自定义模板时使用 assets/default/ 中的默认模板
     if explicit:
         return Path(explicit), False
     if not ASSETS_DIR.is_dir():
         raise SystemExit(f'找不到模板目录 {ASSETS_DIR}')
-    default = ASSETS_DIR / DEFAULT_TEMPLATE_NAME
-    custom = sorted(p for p in ASSETS_DIR.glob('*.pptx')
-                    if p.name != DEFAULT_TEMPLATE_NAME)
+    default = DEFAULT_TEMPLATE_DIR / DEFAULT_TEMPLATE_NAME
+    custom = sorted(ASSETS_DIR.glob('*.pptx'))
     if len(custom) > 1:
         names = '、'.join(p.name for p in custom)
         raise SystemExit(
@@ -338,7 +339,7 @@ def main():
     ap.add_argument('--media', required=True, help='图片目录')
     ap.add_argument('--work', required=True, help='中间目录')
     ap.add_argument('--template',
-                    help='模板 pptx 路径；省略时自动选用 assets/ 中的自定义模板，没有则用默认模板')
+                    help='模板 pptx 路径；省略时自动选用 assets/ 中的自定义模板，没有则用 assets/default/ 的默认模板')
     ap.add_argument('--emblem', help='校徽图片路径（可选），绘制进页眉与封面')
     ap.add_argument('--redraw-banners', action='store_true',
                     help='使用自定义模板时，仍按 meta 重绘页眉与封面横幅')
@@ -347,7 +348,6 @@ def main():
     template_path, custom = find_template(args.template)
     validate_template(template_path)
     print(f'模板：{template_path}' + ('（自定义）' if custom else '（默认）'))
-
     deck = json.loads(Path(args.deck).read_text(encoding='utf-8'))
     meta = dict(deck.get('meta', {}))
     meta.setdefault('title_en', '论文英文标题')

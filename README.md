@@ -22,7 +22,7 @@
 
 Preparing a group-meeting deck means reading a paper closely, picking figures, rebuilding the same layout once more, and checking every table by hand. This skill takes that pass off your plate: point it at a paper PDF and it produces a complete Chinese slide deck, from the cover to the closing page.
 
-It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md` plus script and asset directories), so it runs in any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI, WorkBuddy and 40+ others. The deck is rebuilt from the layout of the template in `assets/`: the bundled `template.pptx` by default, or your own deck dropped into the same folder. Numbers, metric names and experimental settings stay faithful to the paper.
+It follows the open [Agent Skills](https://agentskills.io) standard (a `SKILL.md` plus script and asset directories), so it runs in any compatible agent, including Claude Code, Codex, Cursor, Gemini CLI, WorkBuddy and 40+ others. The deck is rebuilt from the layout of the template in `assets/`: the bundled one in `assets/default/` by default, or your own deck dropped into `assets/` itself. Numbers, metric names and experimental settings stay faithful to the paper.
 
 <table>
   <tr>
@@ -114,11 +114,11 @@ Describe the task in any session. The agent picks the skill up from its descript
 The agent first asks for the presenter name, school, college and lab; answer "use defaults" to keep the generic placeholders. When you name a school, it fetches that school's emblem from [urongda.com](https://www.urongda.com/) and draws it into the banners. The deck itself is written in Chinese, and without a PDF the agent asks for the paper title or arXiv ID.
 
 > [!IMPORTANT]
-> `assets/template.pptx` ships with generic school and college names. Custom templates are ignored by Git (`.gitignore` excludes every `assets/*.pptx` except the default).
+> `assets/default/template.pptx` ships with generic school and college names. Custom templates are ignored by Git (`.gitignore` excludes every `assets/*.pptx`).
 
 ### 4. Optional: bring your own template
 
-Put a pptx with your emblem, school names and colors already in place into `assets/` (keep `template.pptx`), and the script prefers it automatically:
+Put a pptx with your emblem, school names and colors already in place into `assets/` itself (the default template stays in `assets/default/`), and the script prefers it automatically:
 
 ```bash
 cp ~/Downloads/my-group-template.pptx ~/.claude/skills/group-meeting-ppt/assets/
@@ -128,8 +128,7 @@ Rules for a custom template:
 
 - Build it from the default template: keep the 4:3 page size (10 × 7.5 in) and all layouts, masters and required media files. Otherwise the script stops and lists what is missing.
 - The header and cover banners are kept as they are and are no longer redrawn from your details, so no emblem download is needed.
-- Only one custom template may sit in `assets/`; with more than one the script stops, so delete the extra file or pass `--template` explicitly.
-- To redraw the banners anyway, add `--redraw-banners`; combine it with `--emblem` to replace the emblem inside the template.
+- Only one custom template may sit in `assets/`; with more than one the script stops, so delete the extra file or pass `--template` explicitly.- To redraw the banners anyway, add `--redraw-banners`; combine it with `--emblem` to replace the emblem inside the template.
 
 ## How it works
 
@@ -169,7 +168,9 @@ School, college and lab names are drawn into the header and cover banners from t
 group-meeting-ppt/
 ├── SKILL.md                # skill entry: workflow and content rules
 ├── agents/openai.yaml      # UI metadata for Codex
-├── assets/template.pptx    # layout template (cover, dividers, content master)
+├── assets/
+│   └── default/
+│       └── template.pptx   # default layout template (cover, dividers, content master)
 ├── references/
 │   ├── deck_schema.md      # content JSON field reference
 │   └── speech_guide.md     # speech script writing guide

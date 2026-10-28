@@ -22,7 +22,7 @@
 
 做一份组会 PPT，要通读论文、挑配图、把同一套版式再搭一遍，还要逐张核对表格。这个技能把这一遍流程接管下来：给一篇论文 PDF，产出从封面到致谢页的整套中文幻灯片。
 
-技能遵循 [Agent Skills](https://agentskills.io) 开放标准（`SKILL.md` 加脚本与资源目录），可用于任何兼容的 agent，包括 Claude Code、Codex、Cursor、Gemini CLI、WorkBuddy 等 40 多个。幻灯片按 `assets/template.pptx` 的版式重建，数值、指标名称与实验设置与论文保持一致。
+技能遵循 [Agent Skills](https://agentskills.io) 开放标准（`SKILL.md` 加脚本与资源目录），可用于任何兼容的 agent，包括 Claude Code、Codex、Cursor、Gemini CLI、WorkBuddy 等 40 多个。幻灯片按 `assets/` 中模板的版式重建：默认使用 `assets/default/` 里自带的模板，也可以把改好的模板直接放进 `assets/` 替换。
 
 <table>
   <tr>
@@ -114,11 +114,11 @@ Windows 上 poppler 没有官方安装包，可用 `scoop install poppler` 或 `
 开场 agent 会询问姓名、学校、学院（专业）与实验室，回答「用默认」即使用通用占位（汇报人、`XX大学`、`XX学院`）；提供了学校时，会从 [urongda.com](https://www.urongda.com/) 获取该校校徽并绘制进页眉与封面。幻灯片内容本身是中文；没有 PDF 时 agent 会询问论文标题或 arXiv 编号。
 
 > [!IMPORTANT]
-> `assets/template.pptx` 内的学校与学院是通用占位。自定义模板已被 Git 忽略（`.gitignore` 只保留默认模板，其余 `assets/*.pptx` 不提交）。
+> `assets/default/template.pptx` 内的学校与学院是通用占位。自定义模板已被 Git 忽略（`.gitignore` 忽略 `assets/*.pptx`）。
 
 ### 4. 可选：使用自己的模板
 
-把校徽、学校名称、配色都已改好的 pptx 放进 `assets/`（保留 `template.pptx` 不删），脚本会自动优先使用它：
+把校徽、学校名称、配色都已改好的 pptx 放进 `assets/` 根目录（默认模板在 `assets/default/` 里，不需要动），脚本会自动优先使用它：
 
 ```bash
 cp ~/Downloads/我的组会模板.pptx ~/.claude/skills/group-meeting-ppt/assets/
@@ -169,7 +169,9 @@ cp ~/Downloads/我的组会模板.pptx ~/.claude/skills/group-meeting-ppt/assets
 group-meeting-ppt/
 ├── SKILL.md                # 技能入口：流程与内容规范
 ├── agents/openai.yaml      # OpenAI 侧（Codex）的展示元数据
-├── assets/template.pptx    # 版式模板（封面、分节页、内容页母版）
+├── assets/
+│   └── default/
+│       └── template.pptx   # 默认版式模板（封面、分节页、内容页母版）
 ├── references/
 │   ├── deck_schema.md      # 内容 JSON 字段说明
 │   └── speech_guide.md     # 演讲稿写作规范
